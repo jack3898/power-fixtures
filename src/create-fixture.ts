@@ -1,15 +1,19 @@
+type Obj = Record<PropertyKey, unknown>;
+
 type FixtureConfig<T> = {
   key: string;
   defaultValues: T;
 };
 
-type FixtureFn<T> = (overrides?: Partial<T>) => FixtureInstance<T>;
+type FixtureFn<T extends Obj> = (overrides?: Partial<T>) => FixtureInstance<T>;
 
-type FixtureInstance<T> = T & {
+type FixtureInstance<T extends Obj> = T & {
   __meta: FixtureConfig<T>;
 };
 
-export function createFixture<T>(config: FixtureConfig<T>): FixtureFn<T> {
+export function createFixture<T extends Obj>(
+  config: FixtureConfig<T>,
+): FixtureFn<T> {
   return (overrides): FixtureInstance<T> => ({
     ...config.defaultValues,
     ...overrides,
@@ -17,31 +21,40 @@ export function createFixture<T>(config: FixtureConfig<T>): FixtureFn<T> {
   });
 }
 
-export function flat(root: any): any[] {
-  const result: any[] = [];
+export function flat<T extends Obj>(root: FixtureInstance<T>): unknown[] {
+  const result: Obj[] = [];
 
-  function traverse(node: any) {
-    if (typeof node !== "object" || node === null || !node.__meta) {
+  function traverse(node: FixtureInstance<Obj>) {
+    if (typeof node !== "object") {
       return;
     }
 
-    const { __meta, ...noMeta } = node;
+    const { __meta, ...rest } = node;
 
-    // Process nested fixtures first
-    for (const key of Object.keys(noMeta)) {
-      const value = noMeta[key];
+    for (const key of Object.keys(node)) {
+      const value = rest[key];
 
-      if (typeof value === "object" && value !== null && value.__meta) {
+      if (isFixtureInstance(value)) {
         traverse(value);
         // Replace the nested fixture object with its key value
-        noMeta[key] = value[value.__meta.key];
+        rest[key] = value[value.__meta.key];
       }
     }
 
-    result.push(noMeta);
+    result.push(rest);
   }
 
   traverse(root);
 
   return result;
+}
+
+function isFixtureInstance(
+  maybeFixture: unknown,
+): maybeFixture is FixtureInstance<Obj> {
+  return (
+    typeof maybeFixture === "object" &&
+    maybeFixture !== null &&
+    "__meta" in maybeFixture
+  );
 }
