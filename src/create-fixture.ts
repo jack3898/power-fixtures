@@ -7,7 +7,8 @@ type FixtureConfig<T> = {
 
 type FixtureFn<T extends MaybeFixture> = {
   (overrides?: Partial<T>): FixtureInstance<T>;
-  isThis: (obj: unknown) => obj is FixtureInstance<T>;
+  isInstance: (obj: MaybeFixture) => obj is FixtureInstance<T>;
+  clean: (obj: FixtureInstance<T>) => Omit<FixtureInstance<T>, "$meta">;
 };
 
 type FixtureInstance<T extends MaybeFixture> = T & {
@@ -17,15 +18,15 @@ type FixtureInstance<T extends MaybeFixture> = T & {
 export function createFixture<T extends MaybeFixture>(
   config: FixtureConfig<T>,
 ): FixtureFn<T> {
-  function fn(overrides: Partial<T>): FixtureInstance<T> {
+  function fn(overrides?: Partial<T>): FixtureInstance<T> {
     return {
       ...config.defaultValues,
-      ...overrides,
+      ...(overrides ?? {}),
       $meta: config,
     };
   }
 
-  fn.isThis = (obj: unknown): obj is FixtureInstance<T> => {
+  fn.isInstance = (obj: unknown): obj is FixtureInstance<T> => {
     return (
       typeof obj === "object" &&
       obj !== null &&
@@ -34,7 +35,13 @@ export function createFixture<T extends MaybeFixture>(
     );
   };
 
-  return fn as FixtureFn<T>;
+  fn.clean = (obj: FixtureInstance<T>): Omit<FixtureInstance<T>, "$meta"> => {
+    const { $meta, ...rest } = obj;
+
+    return rest;
+  };
+
+  return fn;
 }
 
 export function flat<T extends MaybeFixture>(
@@ -47,19 +54,17 @@ export function flat<T extends MaybeFixture>(
       return;
     }
 
-    const { $meta, ...rest } = node;
-
     for (const key of Object.keys(node)) {
-      const value = rest[key];
+      const value = node[key];
 
       if (isFixtureInstance(value)) {
         traverse(value);
         // Replace the nested fixture object with its key value
-        rest[key] = value[value.$meta.key];
+        node[key] = value[value.$meta.key];
       }
     }
 
-    result.push(rest);
+    result.push(node);
   }
 
   traverse(root);
