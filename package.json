@@ -1,0 +1,39 @@
+{
+  "name": "power-fixtures",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup",
+    "check": "biome check src",
+    "knip": "knip",
+    "type-check": "tsc --noEmit",
+    "test:watch": "vitest",
+    "test": "vitest run"
+  },
+  "keywords": [
+   "testing",
+    "fixtures",
+    "test"
+  ],
+  "author": "Jack Wright",
+  "license": "Apache-2.0",
+  "description": "Create test fixtures, easily.",
+  "files": [
+    "./dist",
+    "./LICENSE",
+    "./README.md"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "knip": "^5.46.4",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jack3898/create-lazy-object.git"
+  },
+  "packageManager": "pnpm@10.8.1+sha512.c50088ba998c67b8ca8c99df8a5e02fd2ae2e2b29aaf238feaa9e124248d3f48f9fb6db2424949ff901cffbb5e0f0cc1ad6aedb602cd29450751d11c35023677"
+}

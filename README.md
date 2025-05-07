@@ -17,17 +17,17 @@ The flattened object will also substitute all foreign keys for the primary key o
 (all subject to change)
 
 ```ts
-const siteFixture = createFixture({
+const site = createFixture({
   key: "id",
   defaultValues: { id: "SITE_ID", name: "Site" },
 });
 
-const userFixture = createFixture({
+const user = createFixture({
   key: "id",
   defaultValues: { id: "USER_ID", name: "John Doe" },
 });
 
-const tenantFixture = createFixture({
+const tenant = createFixture({
   key: "id",
   defaultValues: { id: "TENANT_ID", name: "Tenant" },
 });
@@ -36,13 +36,13 @@ const tenantFixture = createFixture({
 Then you can create your desired structure for something like an integration test:
 
 ```ts
-const fixture = userFixture({
+const fixture = user({
   name: "John",
-  siteId: siteFixture({
+  siteId: site({
     name: "site",
-    tenantId: tenantFixture(),
+    tenantId: tenant(),
   }),
-  secondSiteId: siteFixture({
+  secondSiteId: site({
     id: "SITE_ID2",
     name: "site2",
   }),
@@ -72,4 +72,3 @@ Then this is what `flattened` will become:
 ```
 
 Then using your database technology of choice, you can write a utility for your test suites to convert that into procedural database calls to set up your test bed!
-# power-fixtures

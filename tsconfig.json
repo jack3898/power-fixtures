@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "target": "ES6"
+  },
+  "exclude": ["dist", "tsup.config.ts"]
+}
