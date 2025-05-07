@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createFixture, flat } from "./create-fixture";
+import { createFixture } from "./create-fixture";
+import { flat } from "./flat";
 
 describe("api", () => {
   const tenantFixture = createFixture({

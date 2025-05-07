@@ -11,19 +11,11 @@
     "test:watch": "vitest",
     "test": "vitest run"
   },
-  "keywords": [
-   "testing",
-    "fixtures",
-    "test"
-  ],
+  "keywords": ["testing", "fixtures", "test"],
   "author": "Jack Wright",
   "license": "Apache-2.0",
   "description": "Create test fixtures, easily.",
-  "files": [
-    "./dist",
-    "./LICENSE",
-    "./README.md"
-  ],
+  "files": ["./dist", "./LICENSE", "./README.md"],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "knip": "^5.46.4",
