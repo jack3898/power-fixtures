@@ -1,35 +1,53 @@
-type Obj = Record<PropertyKey, unknown>;
+type MaybeFixture = Record<PropertyKey, unknown>;
 
 type FixtureConfig<T> = {
   key: string;
   defaultValues: T;
 };
 
-type FixtureFn<T extends Obj> = (overrides?: Partial<T>) => FixtureInstance<T>;
-
-type FixtureInstance<T extends Obj> = T & {
-  __meta: FixtureConfig<T>;
+type FixtureFn<T extends MaybeFixture> = {
+  (overrides?: Partial<T>): FixtureInstance<T>;
+  isThis: (obj: unknown) => obj is FixtureInstance<T>;
 };
 
-export function createFixture<T extends Obj>(
+type FixtureInstance<T extends MaybeFixture> = T & {
+  $meta: FixtureConfig<T>;
+};
+
+export function createFixture<T extends MaybeFixture>(
   config: FixtureConfig<T>,
 ): FixtureFn<T> {
-  return (overrides): FixtureInstance<T> => ({
-    ...config.defaultValues,
-    ...overrides,
-    __meta: config,
-  });
+  function fn(overrides: Partial<T>): FixtureInstance<T> {
+    return {
+      ...config.defaultValues,
+      ...overrides,
+      $meta: config,
+    };
+  }
+
+  fn.isThis = (obj: unknown): obj is FixtureInstance<T> => {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      "$meta" in obj &&
+      obj.$meta === config
+    );
+  };
+
+  return fn as FixtureFn<T>;
 }
 
-export function flat<T extends Obj>(root: FixtureInstance<T>): unknown[] {
-  const result: Obj[] = [];
+export function flat<T extends MaybeFixture>(
+  root: FixtureInstance<T>,
+): MaybeFixture[] {
+  const result: MaybeFixture[] = [];
 
-  function traverse(node: FixtureInstance<Obj>) {
+  function traverse(node: FixtureInstance<MaybeFixture>) {
     if (typeof node !== "object") {
       return;
     }
 
-    const { __meta, ...rest } = node;
+    const { $meta, ...rest } = node;
 
     for (const key of Object.keys(node)) {
       const value = rest[key];
@@ -37,7 +55,7 @@ export function flat<T extends Obj>(root: FixtureInstance<T>): unknown[] {
       if (isFixtureInstance(value)) {
         traverse(value);
         // Replace the nested fixture object with its key value
-        rest[key] = value[value.__meta.key];
+        rest[key] = value[value.$meta.key];
       }
     }
 
@@ -51,10 +69,10 @@ export function flat<T extends Obj>(root: FixtureInstance<T>): unknown[] {
 
 function isFixtureInstance(
   maybeFixture: unknown,
-): maybeFixture is FixtureInstance<Obj> {
+): maybeFixture is FixtureInstance<MaybeFixture> {
   return (
     typeof maybeFixture === "object" &&
     maybeFixture !== null &&
-    "__meta" in maybeFixture
+    "$meta" in maybeFixture
   );
 }
