@@ -1,24 +1,20 @@
 type FixtureConfig<T> = {
   key: string;
-  defaultValues?: Partial<T>;
+  defaultValues: T;
 };
 
-type FixtureFn<T> = (
-  overrides?: Partial<T & Record<string, any>>
-) => FixtureInstance<T>;
+type FixtureFn<T> = (overrides?: Partial<T>) => FixtureInstance<T>;
 
 type FixtureInstance<T> = T & {
   __meta: FixtureConfig<T>;
 };
 
 export function createFixture<T>(config: FixtureConfig<T>): FixtureFn<T> {
-  return function (overrides = {}) {
-    return {
-      ...config.defaultValues,
-      ...overrides,
-      __meta: config,
-    } as FixtureInstance<T>;
-  };
+  return (overrides): FixtureInstance<T> => ({
+    ...config.defaultValues,
+    ...overrides,
+    __meta: config,
+  });
 }
 
 export function flat(root: any): any[] {
