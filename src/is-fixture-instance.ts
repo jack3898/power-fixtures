@@ -1,6 +1,6 @@
 import type { FixtureInstance, AnyObject } from "./types";
 
-export function isFixtureInstance(
+export function isBasicFixture(
   maybeFixture: unknown
 ): maybeFixture is FixtureInstance<AnyObject> {
   return (
