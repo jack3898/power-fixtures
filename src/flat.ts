@@ -1,12 +1,12 @@
 import { isFixtureInstance } from "./is-fixture-instance";
-import type { FixtureInstance, MaybeFixture } from "./types";
+import type { FixtureInstance, AnyObject } from "./types";
 
-export function flat<T extends MaybeFixture>(
-  root: FixtureInstance<T>,
-): MaybeFixture[] {
-  const result: MaybeFixture[] = [];
+export function flat<T extends AnyObject>(
+  root: FixtureInstance<T>
+): AnyObject[] {
+  const result: AnyObject[] = [];
 
-  function traverse(node: FixtureInstance<MaybeFixture>) {
+  function traverse(node: AnyObject) {
     if (typeof node !== "object") {
       return;
     }

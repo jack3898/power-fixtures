@@ -2,10 +2,10 @@ import type {
   FixtureConfig,
   FixtureFn,
   FixtureInstance,
-  MaybeFixture,
+  AnyObject,
 } from "./types";
 
-export function createFixture<T extends MaybeFixture, K extends string>(
+export function createFixture<T extends AnyObject>(
   config: FixtureConfig<T>
 ): FixtureFn<T> {
   function fn(overrides?: Partial<T>): FixtureInstance<T> {
