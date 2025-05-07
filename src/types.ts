@@ -1,7 +1,7 @@
 export type MaybeFixture = Record<PropertyKey, unknown>;
 
 export type FixtureConfig<T> = {
-  key: string;
+  key: keyof T;
   defaultValues: T;
 };
 

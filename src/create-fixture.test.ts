@@ -70,7 +70,7 @@ describe("api", () => {
 
     expect(
       tenantFixture.isInstance(flattened[0]) &&
-        tenantFixture.clean(flattened[0]),
+        tenantFixture.clean(flattened[0])
     ).toEqual({ id: "TENANT_ID", name: "Tenant" });
   });
 });
